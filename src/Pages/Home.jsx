@@ -6,7 +6,7 @@ export default function Home() {
     <Container sx={{ mt: 4 }}>
       <Box textAlign="center">
         <img
-          src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3"
+          src="https://th.bing.com/th/id/OIP.koxaWIl248OakWja7hzGCAHaCw?w=297&h=180&c=7&r=0&o=7&pid=1.7&rm=3"
           alt="hospital"
           width="100%"
           style={{ borderRadius: "10px" }}
