@@ -1,10 +1,21 @@
 import React, { useState } from "react";
-import { Container, TextField, Button, Typography, Alert, Stack } from "@mui/material";
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  Stack,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-  // form now has name, email, password
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -15,10 +26,10 @@ export default function Register() {
     setSuccess("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
+    // Validation
     if (form.name.trim() === "") {
       setError("Please enter your name.");
       return;
@@ -32,30 +43,28 @@ export default function Register() {
       return;
     }
 
-    // Get existing users from localStorage
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    // Check if email already registered
-    const exists = users.find((u) => u.email === form.email);
-    if (exists) {
-      setError("Email already registered!");
-      return;
+      if (!res.ok) {
+        throw new Error("Email already registered!");
+      }
+
+      setSuccess("Registration Successful! Redirecting to Login...");
+      setForm({ name: "", email: "", password: "" });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (err) {
+      setError(err.message);
     }
-
-    // Add new user
-    users.push({ ...form });
-    localStorage.setItem("users", JSON.stringify(users));
-
-    // Success message
-    setSuccess("Registration Successful! Redirecting to Login...");
-
-    // Reset form
-    setForm({ name: "", email: "", password: "" });
-
-    // Redirect to Login page after 2 seconds
-    setTimeout(() => {
-      navigate("/login");
-    }, 2000);
   };
 
   return (
@@ -79,6 +88,7 @@ export default function Register() {
           sx={{ my: 1 }}
           required
         />
+
         <TextField
           label="Email"
           name="email"
@@ -88,6 +98,7 @@ export default function Register() {
           sx={{ my: 1 }}
           required
         />
+
         <TextField
           label="Password"
           name="password"
@@ -99,7 +110,13 @@ export default function Register() {
           required
         />
 
-        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+        >
           Register
         </Button>
       </form>
